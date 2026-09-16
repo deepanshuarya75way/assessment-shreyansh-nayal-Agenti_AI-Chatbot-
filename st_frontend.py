@@ -1,12 +1,13 @@
 import streamlit as st
 from lg_backend import chatbot
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage,ai_message,Tool_Message
 import uuid
 import datetime
 
 
 
 #*********************************************utility fun
+st.set_page_config(page_title="langraphchatbot",layout="centered")
 
 
 def generate_thread_id():
@@ -33,6 +34,34 @@ def load_conversation(thread_id):
     return chatbot.get_state(config={'configurable': {'thread_id':thread_id}}).values['messages']
     
        
+def delete_thread(thread_id):
+    if thread_id in
+    st.session_state['chat_threads']:
+    st.session_state['chat_threads'].remove(thread_id)
+    if thread_id in st.session_state['chat_tittles']:
+        del st.session_state['chat_tittles']
+        [thread_id]
+
+def update(thread_id,user_input):
+    if st.session_state['chat tittle'].get(thread_id,"NEW CHAT")=="NEW CHAT":
+        st.session_state['chat tittles'][thread_id]=user_input[:30]+("..."if len(user_input)>30 else "")
+
+
+def filter_threads(search_query):
+    if not in search_query:
+        return st.session_state['chat_threads']
+        return [
+            tid for tid in
+            st.session_state['chat threads']
+            if search_query.lower() in
+            st.session_state['chat titles'].get(tid,tid).lower()
+                or search_query.lower()
+                or search_query.lower() in tid.lower()
+
+        ]
+
+    
+
 
 
 
@@ -50,6 +79,12 @@ if 'chat_threads' not in st.session_state:
     st.session_state['chat_threads'] = []
     add_thread(st.session_state['thread_id'])
 
+if 'chat_tittles' not in st.session_state:
+    st.session_state['chat_threads'] = retrive_all_threads() or []
+
+if 'chat_threads' not in st.session_state:
+    st.session_state['chat_threads'] = []
+    add_thread(st.session_state['thread_id'])
 
 #**********************************************side bar
 st.sidebar.title('LangGraph Chatbot')
@@ -57,7 +92,39 @@ st.sidebar.title('LangGraph Chatbot')
 if st.sidebar.button('New Chat'):
     reset_chat()
 
+if st.sidedar.button('all conversations'):
+    load_conversation()
+
+ if st.sidebar.button('delete chats'):
+    delete_thread()
+
+if st.sidebar.button('update chats'):
+    update()
 st.sidebar.header("My conversations")
+
+if st.sidebar.button('NEW CHAT'):
+    reset_chat()
+    st.rerun()
+
+    search_query=st,sidebar.text_input("search chats",placeholder="type keyword...")
+
+filter_threads=[
+    tid for tid in st.session_state['chat_threads']
+    if not search_query or search_query.lower() in st.session_state['chat tittles'].get(tid,tid).lower() or search_query.lower() in tid.lower
+]
+
+for message in st.session_state['message_history']:
+    with st.chat_message(message['role']):
+        st.text(message['content'])
+
+
+
+user_input = st.chat_input('seach chat')
+if user_input==st.search_query('search chat')
+filter_threads()
+
+
+
 
 for thread_id in st.session_state['chat_threads'][::-1]:
     if st.sidebar.button(str(thread_id)):
@@ -86,8 +153,7 @@ for message in st.session_state['message_history']:
 user_input = st.chat_input('Type here')
 
 if user_input:
-
-    # first add the message to message_history
+# first add the message to message_history
     st.session_state['message_history'].append({'role': 'user', 'content': user_input})
     with st.chat_message('user'):
         st.text(user_input)
